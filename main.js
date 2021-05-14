@@ -34,6 +34,14 @@ const articles = [
         res.json(articles);
     });
 
+
+    app.get('/articles/search_1',(req,res)=>{
+        let author = req.query.author
+        const articlesAuthor = articles.filter((element) => element.author === author)
+        res.status(200); 
+        res.json(articlesAuthor);
+    });
+
     app.get('/articles/:id', (req,res)=>{
         let id = req.query.id
         const articlesId = articles.filter((element) => element.id === parseInt(id))
@@ -41,6 +49,7 @@ const articles = [
         res.json(articlesId);
     });
 
+   
 
 
     app.listen(port,()=>{
