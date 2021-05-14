@@ -34,8 +34,12 @@ const articles = [
         res.json(articles);
     });
 
-
-
+    app.get('/articles/:id', (req,res)=>{
+        let id = req.query.id
+        const articlesId = articles.filter((element) => element.id === parseInt(id))
+        res.status(200); 
+        res.json(articlesId);
+    });
 
 
 
