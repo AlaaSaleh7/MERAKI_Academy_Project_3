@@ -98,7 +98,7 @@ app.put("/articles/:id",(req, res) => {
       i = index;
     return element.id === parseInt(id);
   });
-
+// const {title,description,author}=req.body
   if (found){
       articles[i].title = req.body.title
       articles[i].description=req.body.description
@@ -124,10 +124,30 @@ app.delete('/articles/:id',(req,res)=>{
   if(found){
     articles.splice(i,1)
   };
-  let massage ={"success":true,'Success Delete article with': `${id}`}
+  let massage ={"success":true,'Success Delete article with =>': `${id}`}
+   // sends back a response massage after delete article by id
   res.json(massage);
 })
 
+// Delete article by author and return massage Success Delete with author
+// a Delete request on endpoint http://localhost:5000/articles
+app.delete('/articles',(req,res)=>{
+
+const author = req.body.author
+  let delet= {}
+        
+        for (i=0;i<articles.length;i++){
+            if(author===articles[i].author){
+                delet=articles.splice(i,1);
+            }
+        } 
+ 
+let massage ={"success":true,'Success Delete article with =>': `${author}`}
+
+// sends back a response massage after delete article by author
+res.json(massage);
+
+});
 
 // listening app in number of port
 app.listen(port, () => {
