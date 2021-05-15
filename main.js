@@ -89,8 +89,8 @@ app.post("/articles", (req, res) => {
 
 // to update the article by id 
 // a Put request on endpoint http://localhost:5000/articles/:id
-app.put("/articles/:id",((req, res) => {
-// received route parameters are in req.params
+app.put("/articles/:id",(req, res) => {
+  // received route parameters are in req.params
   const id = req.params.id
    let i; 
 
@@ -108,8 +108,26 @@ app.put("/articles/:id",((req, res) => {
     // sends back a response articles after update
     res.json(articles);
   }
+})
 
-}))
+// Delete article by id and return massage Success Delete with id
+// a Delete request on endpoint http://localhost:5000/articles/:id
+app.delete('/articles/:id',(req,res)=>{
+  // received route parameters are in req.params
+  const id = req.params.id
+  let i; 
+
+  const found = articles.find((element,index) => {
+      i = index;
+    return element.id === parseInt(id);
+  });
+  if(found){
+    articles.splice(i,1)
+  };
+  let massage ={"success":true,'Success Delete article with': `${id}`}
+  res.json(massage);
+})
+
 
 // listening app in number of port
 app.listen(port, () => {
