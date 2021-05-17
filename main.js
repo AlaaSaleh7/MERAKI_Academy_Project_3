@@ -163,24 +163,18 @@ app.delete("/articles/id", (req, res) => {
 });
 
 // Delete article by author and return massage Success Delete with author
-// a Delete request on endpoint http://localhost:5000/articles
-app.delete("/articles", (req, res) => {
-  const author = req.body.author;
-  let delet = {};
+// a Delete request on endpoint http://localhost:5000/articles/author
+app.delete("/articles/author", (req, res) => {
+  const {author,title, description} = req.body;
 
-  for (i = 0; i < articles.length; i++) {
-    if (author === articles[i].author) {
-      delet = articles.splice(i, 1);
-    }
-  }
-
-  let massage = {
-    success: true,
-    "Success Delete article with =>": `${author}`,
-  };
-
-  // sends back a response massage after delete article by author
-  res.json(massage);
+  Articles
+    .deleteOne({author}, {title,description})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 //create new author
