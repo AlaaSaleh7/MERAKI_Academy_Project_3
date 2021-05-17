@@ -1,5 +1,11 @@
 const express = require("express");
 
+const mongoose =require("mongoose");
+
+const theArticles = require("./schema")
+
+const db = require("./db");
+
 const {uuid} = require("uuidv4");
 
 const app = express();
@@ -146,6 +152,13 @@ let massage ={"success":true,'Success Delete article with =>': `${author}`}
 
 // sends back a response massage after delete article by author
 res.json(massage);
+
+});
+
+
+//create new author 
+app.post("/users",(req,res)=>{
+  const {firstName,lastName,age, isCompleted, priority } = req.body;
 
 });
 
