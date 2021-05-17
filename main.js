@@ -43,8 +43,14 @@ const articles = [
 app.get("/articles", (req, res) => {
   // set the response status code to 200 (ok)
   res.status(200);
-  // sends back a response all articles
-  res.json(articles);
+  Articles
+  .find()
+  .then((result)=>{
+    res.json(result)
+  })
+  .catch((err)=>{
+    res.send(err);
+  })
 });
 
 // to get articles by author
@@ -78,19 +84,23 @@ app.get("/articles/:id", (req, res) => {
 // to add new article
 // a Post request on endpoint http://localhost:5000/articles
 app.post("/articles", (req, res) => {
-  let article = {
-    id: uuid(),
-    title: req.body.title,
-    description: req.body.description,
-    author: req.body.author,
-  };
+  const {title, description,author} = req.body;
+  const newArticle = new Articles({
+    title,
+    description,
+    author,
+  })
+  newArticle
+  .save()
+  .then((result)=>{
+    res.json(result)
+  })
+  .catch((err)=>{
+    res.send(err)
+  })
 
-  articles.push(article);
-  // set the response status code to 201 (Created)
-  res.status(201);
-  // sends back a response article
-  res.json(article);
 });
+
 
 // to update the article by id
 // a Put request on endpoint http://localhost:5000/articles/:id
@@ -177,7 +187,9 @@ app.post("/users", (req, res) => {
   .catch((err)=>{
     res.send(err);
   })
+  res.status(201)
 });
+
 
 // listening app in number of port
 app.listen(port, () => {
