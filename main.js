@@ -59,69 +59,91 @@ app.get("/articles/search_1", (req, res) => {
   // query parameters way: req.query.id "/articles/search_1?author=Jouza"
   let author = req.query.author;
 
-  const articlesAuthor = articles.filter(
-    (element) => element.author === author
-  );
+  Articles.find({author}).then((result)=>{
+    res.json(result)
+  })
+  .catch((err)=>{
+    res.send(err)
+  })
   // set the response status code to 200 (ok)
   res.status(200);
-  // sends back a response article by author
-  res.json(articlesAuthor);
+  
 });
 
 // to get articles by id
 // a Get request on endpoint http://localhost:5000/articles/:id
-app.get("/articles/:id", (req, res) => {
+app.get("/articles/id", (req, res) => {
   // query parameters way: req.query.id "/articles?id=3"
-  let id = req.query.id;
-
-  const articlesId = articles.filter((element) => element.id === parseInt(id));
-  // set the response status code to 200 (ok)
-  res.status(200);
-  // sends back a response article by req id
-  res.json(articlesId);
-});
-
-// to add new article
-// a Post request on endpoint http://localhost:5000/articles
-app.post("/articles", (req, res) => {
-  const {title, description,author} = req.body;
-  const newArticle = new Articles({
-    title,
-    description,
-    author,
-  })
-  newArticle
-  .save()
+  let _id = req.body.id;
+  Articles.find({_id}).populate("firstName")
+  .exec()
   .then((result)=>{
     res.json(result)
   })
   .catch((err)=>{
     res.send(err)
   })
+  // set the response status code to 200 (ok)
+  res.status(200);
+  // sends back a response article by req id
+  
+});
+
+// to add new article
+// a Post request on endpoint http://localhost:5000/articles
+app.post("/articles",async (req, res) => {
+  const {title, description} = req.body;
+  let author1;
+  await Users.findOne({
+  firstName:"Mohammad"
+  })
+  .then(
+    (result)=>{
+      author1=result
+    })
+    .catch((err)=>{
+      res.json(err)
+    })
+    const user1 = new Articles({
+      title,
+      description,
+      author:author1._id})
+
+    user1
+    .save()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 
 });
 
 
 // to update the article by id
 // a Put request on endpoint http://localhost:5000/articles/:id
-app.put("/articles/:id", (req, res) => {
+app.put("/articles/id", (req, res) => {
   // received route parameters are in req.params
-  const id = req.params.id;
+  const id = req.body.id;
   let i;
 
-  const found = articles.find((element, index) => {
-    i = index;
-    return element.id === parseInt(id);
-  });
+  const found = Articles.find({id}).then(
+    (result)=>{
+      res.json(result)
+  })
+  .catch((err)=>{
+    res.send(err)
+  })
   // const {title,description,author}=req.body
   if (found) {
-    articles[i].title = req.body.title;
-    articles[i].description = req.body.description;
-    articles[i].author = req.body.author;
+    Articles.title = req.body.title;
+    Articles.description = req.body.description;
+    Articles.author = req.body.author;
     // set the response status code to 200 (ok)
     res.status(200);
     // sends back a response articles after update
-    res.json(articles);
+  
   }
 });
 
