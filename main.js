@@ -2,7 +2,7 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
-const {Users,Articles} = require("./schema");
+const { Users, Articles } = require("./schema");
 
 const db = require("./db");
 
@@ -16,41 +16,18 @@ const port = 5000;
 // a middleware that enables us to read the received JSON data
 app.use(express.json());
 
-// modify array
-const articles = [
-  {
-    id: 1,
-    title: "How I learn coding?",
-    description: "Lorem, Quam, mollitia.",
-    author: "Jouza",
-  },
-  {
-    id: 2,
-    title: "Coding Best Practices",
-    description: "Lorem, ipsum dolor sit, Quam, mollitia.",
-    author: "Besslan",
-  },
-  {
-    id: 3,
-    title: "Debugging",
-    description: "Lorem, Quam, mollitia.",
-    author: "Jouza",
-  },
-];
-
 // to get all the articles
 // a Get request on endpoint http://localhost:5000/articles
 app.get("/articles", (req, res) => {
   // set the response status code to 200 (ok)
   res.status(200);
-  Articles
-  .find()
-  .then((result)=>{
-    res.json(result)
-  })
-  .catch((err)=>{
-    res.send(err);
-  })
+  Articles.find()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 // to get articles by author
@@ -59,60 +36,60 @@ app.get("/articles/search_1", (req, res) => {
   // query parameters way: req.query.id "/articles/search_1?author=Jouza"
   let author = req.query.author;
 
-  Articles.find({author}).then((result)=>{
-    res.json(result)
-  })
-  .catch((err)=>{
-    res.send(err)
-  })
+  Articles.find({ author })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
   // set the response status code to 200 (ok)
   res.status(200);
-  
 });
 
 // to get articles by id
 // a Get request on endpoint http://localhost:5000/articles/id
-app.get("/articles/id",async (req, res) => {
+app.get("/articles/id", async (req, res) => {
   // query parameters way: req.query.id "/articles?id=3"
   const author = req.body.author;
-  
-  const user = await Users.findOne({firstName: author})
-    Articles.find({author:user._id}).populate("author","firstName")
-  .exec()
-  .then((result)=>{
-    console.log(result)
-    res.json(result)
-  })
-  .catch((err)=>{
-    res.send(err)
-  })
+
+  const user = await Users.findOne({ firstName: author });
+  Articles.find({ author: user._id })
+    .populate("author", "firstName")
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
   // set the response status code to 200 (ok)
   res.status(200);
   // sends back a response article by req id
-  
 });
 
 // to add new article
 // a Post request on endpoint http://localhost:5000/articles
-app.post("/articles",async (req, res) => {
-  const {title, description} = req.body;
+app.post("/articles", async (req, res) => {
+  const { title, description } = req.body;
   let author1;
   await Users.findOne({
-  firstName:"Alaa"
+    firstName: "Alaa",
   })
-  .then(
-    (result)=>{
-      author1=result
+    .then((result) => {
+      author1 = result;
     })
-    .catch((err)=>{
-      res.json(err)
-    })
-    const user1 = new Articles({
-      title,
-      description,
-      author:author1._id})
+    .catch((err) => {
+      res.json(err);
+    });
+  const user1 = new Articles({
+    title,
+    description,
+    author: author1._id,
+  });
 
-    user1
+  user1
     .save()
     .then((result) => {
       res.json(result);
@@ -120,40 +97,33 @@ app.post("/articles",async (req, res) => {
     .catch((err) => {
       res.send(err);
     });
-
 });
-
 
 // to update the article by id
 // a Put request on endpoint http://localhost:5000/articles/id
 app.put("/articles/id", (req, res) => {
   // received route parameters are in req.params
-  const {_id,title, description} = req.body;
- Articles.findOneAndUpdate({_id},{title,description},{new:true})
- .then(
-    (result)=>{
-      res.json(result)
-  })
-  .catch((err)=>{
-    res.send(err)
-  })
+  const { _id, title, description } = req.body;
+  Articles.findOneAndUpdate({ _id }, { title, description }, { new: true })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 
-  
-    // set the response status code to 200 (ok)
-    res.status(200);
-    // sends back a response articles after update
-  
-  
+  // set the response status code to 200 (ok)
+  res.status(200);
+  // sends back a response articles after update
 });
 
 // Delete article by id and return massage Success Delete with id
 // a Delete request on endpoint http://localhost:5000/articles/id
 app.delete("/articles/id", (req, res) => {
   // received route parameters are in req.params
-  const {_id,title, description} = req.body;
+  const { _id, title, description } = req.body;
 
-  Articles
-    .deleteOne({ _id }, {title,description})
+  Articles.deleteOne({ _id }, { title, description })
     .then((result) => {
       res.json(result);
     })
@@ -165,10 +135,9 @@ app.delete("/articles/id", (req, res) => {
 // Delete article by author and return massage Success Delete with author
 // a Delete request on endpoint http://localhost:5000/articles/author
 app.delete("/articles/author", (req, res) => {
-  const {author,title, description} = req.body;
+  const { author, title, description } = req.body;
 
-  Articles
-    .deleteOne({author}, {title,description})
+  Articles.deleteOne({ author }, { title, description })
     .then((result) => {
       res.json(result);
     })
@@ -192,16 +161,15 @@ app.post("/users", (req, res) => {
   });
 
   newAuthor
-  .save()
-  .then((result)=>{
-    res.json(result)
-  })
-  .catch((err)=>{
-    res.send(err);
-  })
-  res.status(201)
+    .save()
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+  res.status(201);
 });
-
 
 // listening app in number of port
 app.listen(port, () => {
