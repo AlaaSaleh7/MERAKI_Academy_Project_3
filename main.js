@@ -71,13 +71,16 @@ app.get("/articles/search_1", (req, res) => {
 });
 
 // to get articles by id
-// a Get request on endpoint http://localhost:5000/articles/:id
-app.get("/articles/id", (req, res) => {
+// a Get request on endpoint http://localhost:5000/articles/id
+app.get("/articles/id",async (req, res) => {
   // query parameters way: req.query.id "/articles?id=3"
-  let _id = req.body.id;
-  Articles.find({_id}).populate("firstName")
+  const author = req.body.author;
+  
+  const user = await Users.findOne({firstName: author})
+    Articles.find({author:user._id}).populate("author","firstName")
   .exec()
   .then((result)=>{
+    console.log(result)
     res.json(result)
   })
   .catch((err)=>{
