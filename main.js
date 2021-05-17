@@ -147,22 +147,19 @@ app.put("/articles/id", (req, res) => {
 });
 
 // Delete article by id and return massage Success Delete with id
-// a Delete request on endpoint http://localhost:5000/articles/:id
-app.delete("/articles/:id", (req, res) => {
+// a Delete request on endpoint http://localhost:5000/articles/id
+app.delete("/articles/id", (req, res) => {
   // received route parameters are in req.params
-  const id = req.params.id;
-  let i;
+  const {_id,title, description} = req.body;
 
-  const found = articles.find((element, index) => {
-    i = index;
-    return element.id === parseInt(id);
-  });
-  if (found) {
-    articles.splice(i, 1);
-  }
-  let massage = { success: true, "Success Delete article with =>": `${id}` };
-  // sends back a response massage after delete article by id
-  res.json(massage);
+  Articles
+    .deleteOne({ _id }, {title,description})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 // Delete article by author and return massage Success Delete with author
