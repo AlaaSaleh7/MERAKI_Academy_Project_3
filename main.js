@@ -98,7 +98,7 @@ app.post("/articles",async (req, res) => {
   const {title, description} = req.body;
   let author1;
   await Users.findOne({
-  firstName:"Mohammad"
+  firstName:"Alaa"
   })
   .then(
     (result)=>{
@@ -125,29 +125,25 @@ app.post("/articles",async (req, res) => {
 
 
 // to update the article by id
-// a Put request on endpoint http://localhost:5000/articles/:id
+// a Put request on endpoint http://localhost:5000/articles/id
 app.put("/articles/id", (req, res) => {
   // received route parameters are in req.params
-  const id = req.body.id;
-  let i;
-
-  const found = Articles.find({id}).then(
+  const {_id,title, description} = req.body;
+ Articles.findOneAndUpdate({_id},{title,description},{new:true})
+ .then(
     (result)=>{
       res.json(result)
   })
   .catch((err)=>{
     res.send(err)
   })
-  // const {title,description,author}=req.body
-  if (found) {
-    Articles.title = req.body.title;
-    Articles.description = req.body.description;
-    Articles.author = req.body.author;
+
+  
     // set the response status code to 200 (ok)
     res.status(200);
     // sends back a response articles after update
   
-  }
+  
 });
 
 // Delete article by id and return massage Success Delete with id
