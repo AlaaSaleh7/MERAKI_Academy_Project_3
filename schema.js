@@ -13,7 +13,7 @@ const articlesSchema = new mongoose.Schema({
     title:{type:String},
     description:{type:String},
     author:{type:mongoose.Schema.Types.ObjectId,ref:"Users"},
-    comments:{type:Array}
+    comments:[{type:mongoose.Schema.Types.ObjectId,ref:"Comment"}]
 });
 
 const commentSchema = new mongoose.Schema({

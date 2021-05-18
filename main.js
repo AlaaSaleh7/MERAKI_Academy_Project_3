@@ -192,26 +192,32 @@ app.post("/login",(req,res)=>{
 })
 
 //Create a new comment 
-// a Post request on endpoint http://localhost:5000/articles/id/comments
-app.post('/articles/id/comments',(req,res)=>{
+// a Post request on endpoint http://localhost:5000/articles/:id/comments
+app.post('/articles/:id/comments',async(req,res)=>{
 const {comment,commenter} = req.body
 const newComment= new Comment({
   comment,
   commenter
 })
 
-
-newComment
+ await newComment
 .save()
 .then(
   (result)=>{
+    console.log(result)
+  Articles.findOneAndUpdate({_id:req.params.id},{$push:{comments:result._id}}).then(
+    (result2)=>{
+      console.log(result2)
+    }
+  )
+  console.log(result._id)
     res.json(result)
   }
 ).catch((err)=>{
   res.send(err)
 })
 
-.save()
+
 })
 
 // listening app in number of port
