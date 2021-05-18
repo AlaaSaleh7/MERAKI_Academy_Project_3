@@ -2,7 +2,7 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
-const { Users, Articles } = require("./schema");
+const { Users, Articles,Comment } = require("./schema");
 
 const db = require("./db");
 
@@ -191,6 +191,28 @@ app.post("/login",(req,res)=>{
 
 })
 
+//Create a new comment 
+// a Post request on endpoint http://localhost:5000/articles/id/comments
+app.post('/articles/id/comments',(req,res)=>{
+const {comment,commenter} = req.body
+const newComment= new Comment({
+  comment,
+  commenter
+})
+
+
+newComment
+.save()
+.then(
+  (result)=>{
+    res.json(result)
+  }
+).catch((err)=>{
+  res.send(err)
+})
+
+.save()
+})
 
 // listening app in number of port
 app.listen(port, () => {
