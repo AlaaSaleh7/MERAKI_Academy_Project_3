@@ -171,6 +171,27 @@ app.post("/users", (req, res) => {
   res.status(201);
 });
 
+// Login 
+// a Post request on endpoint http://localhost:5000/login
+app.post("/login",(req,res)=>{
+  const {email,password}= req.body
+  Users
+  .findOne({email,password})
+  .then((result)=>{
+    if(result){
+      res.json("Valid login credentials")
+    }else{
+      res.json("Invalid login credentials")
+    }
+    console.log(result);
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
+
+})
+
+
 // listening app in number of port
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
