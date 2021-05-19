@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 
 const { Users, Articles,Comment } = require("./schema");
 
+require("dotenv").config();
+
 const db = require("./db");
 
 const { uuid } = require("uuidv4");
