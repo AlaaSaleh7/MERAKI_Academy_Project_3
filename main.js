@@ -251,6 +251,22 @@ app.post("/articles/:id/comments", authentication, async (req, res) => {
     .catch((err) => {
       res.send(err);
     });
+    //try solve role massage
+  //createNewComment [Level 3]
+  //Use it after the authentication middleware,
+  // invoke the closure function so it returns the middleware functionauthorization("CREATE_COMMENT")
+  const authorization = () => {
+    for (let i = 0; i < permissions.length; i++) {
+      if (permissions[i] === "CREATE_COMMENT") {
+        next();
+        authentication();
+      } else {
+        res.json({ message: "forbidden ", status: 403 });
+      }
+    }
+    authorization("CREATE_COMMENT");
+  };
+
 });
 
 // listening app in number of port
