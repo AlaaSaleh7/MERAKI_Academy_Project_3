@@ -210,7 +210,7 @@ app.post("/login",async (req, res) => {
     res.send(err);
   });
 });
-
+     
 //Create a new comment
 // a Post request on endpoint http://localhost:5000/articles/:id/comments
 const authentication = (req, res, next) => {
