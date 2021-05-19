@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const database = process.env.URI
+
+const database = process.env.DB_URI
 
 
 const options = {

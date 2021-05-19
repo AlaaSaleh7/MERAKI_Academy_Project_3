@@ -4,11 +4,18 @@ const mongoose = require("mongoose");
 
 const { Users, Articles,Comment } = require("./schema");
 
+// .env in my computer!!
 require("dotenv").config();
+
+const secret = process.env.SECRET
+
+const jwt = require("jsonwebtoken")
 
 const db = require("./db");
 
 const { uuid } = require("uuidv4");
+// to has
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -152,7 +159,6 @@ app.delete("/articles/author", (req, res) => {
 // a Post request on endpoint http://localhost:5000/users
 app.post("/users", (req, res) => {
   const { firstName, lastName, age, country, email, password } = req.body;
-
   const newAuthor = new Users({
     firstName,
     lastName,
@@ -165,13 +171,14 @@ app.post("/users", (req, res) => {
   newAuthor
     .save()
     .then((result) => {
+     // console.log(result)
       res.json(result);
     })
     .catch((err) => {
       res.send(err);
     });
   res.status(201);
-});
+  })
 
 // Login 
 // a Post request on endpoint http://localhost:5000/login

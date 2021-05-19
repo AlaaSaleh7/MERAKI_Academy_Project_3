@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require("bcrypt");
 const usersSchema = new mongoose.Schema({
     firstName:{type:String},
     lastName:{type:String},
@@ -7,6 +7,17 @@ const usersSchema = new mongoose.Schema({
     country:{type:String},
     email: {type:String},
     password: {type:String}
+});
+
+//before saving the user information make this 
+usersSchema.pre("save",async function(){
+this.email = this.email.toLowerCase()
+console.log(this.email)
+const salt = 10;
+const hashedPassword =await bcrypt.hash(this.password,salt)
+
+this.password = hashedPassword
+//console.log(hashedPassword)
 });
 
 const articlesSchema = new mongoose.Schema({
