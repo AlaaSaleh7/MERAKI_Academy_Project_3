@@ -2,14 +2,14 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
-const { Users, Articles,Comment } = require("./schema");
+const { Users, Articles, Comment } = require("./schema");
 
 // .env in my computer!!
 require("dotenv").config();
 
-const secret = process.env.SECRET
+const secret = process.env.SECRET;
 
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 const db = require("./db");
 
@@ -171,63 +171,84 @@ app.post("/users", (req, res) => {
   newAuthor
     .save()
     .then((result) => {
-     // console.log(result)
+      // console.log(result)
       res.json(result);
     })
     .catch((err) => {
       res.send(err);
     });
   res.status(201);
-  })
+});
 
-// Login 
+// Login
 // a Post request on endpoint http://localhost:5000/login
-app.post("/login",(req,res)=>{
-  const {email,password}= req.body
-  Users
-  .findOne({email,password})
-  .then((result)=>{
-    if(result){
-      res.json("Valid login credentials")
-    }else{
-      res.json("Invalid login credentials")
+app.post("/login",async (req, res) => {
+  const { email, password } = req.body;
+  await Users.findOne({ email }).then( async (result) => {
+    if (!result) {
+      return res.send({ massage: "The email doesn't exist", status: 404 });
     }
+    const payload = { userId: result._id, country: result.country,
+      role:{role:'admin',permissions:['MANAGE_USERS', 'CREATE_COMMENTS'] } } 
+    const options = {
+      expiresIn: "60m",
+    };
     console.log(result);
-  })
-  .catch((err)=>{
-    console.log(err)
-  })
+    const token = await jwt.sign(payload, secret, options);
+    console.log(result.password);  //should be a hashed password
+    await bcrypt.compare(password, result.password, (err, result) => {
+      if (result) {
+        res.json(token);
+      } else {
+        return res.send({
+          massage: "The password you've entered is incorrect",
+          status: 403,
+        });
+      }
+    });
+  }).catch((err) => {
+    res.send(err);
+  });
+});
 
-})
-
-//Create a new comment 
+//Create a new comment
 // a Post request on endpoint http://localhost:5000/articles/:id/comments
-app.post('/articles/:id/comments',async(req,res)=>{
-const {comment,commenter} = req.body
-const newComment= new Comment({
-  comment,
-  commenter
-})
-
- await newComment
-.save()
-.then(
-  (result)=>{
-    console.log(result)
-  Articles.findOneAndUpdate({_id:req.params.id},{$push:{comments:result._id}}).then(
-    (result2)=>{
-      console.log(result2)
+const authentication = (req, res, next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  
+  jwt.verify(token, secret, (err, result) => {
+    if (token) {
+      next();
     }
-  )
-  console.log(result._id)
-    res.json(result)
-  }
-).catch((err)=>{
-  res.send(err)
-})
+    if (err) {
+      res.send({ massage: "the token invalid expired", status: "403" });
+    }
+  });
+};
+app.post("/articles/:id/comments", authentication, async (req, res) => {
+  const { comment, commenter } = req.body;
+  const newComment = new Comment({
+    comment,
+    commenter,
+  });
 
-
-})
+  await newComment
+    .save()
+    .then((result) => {
+      console.log(result);
+      Articles.findOneAndUpdate(
+        { _id: req.params.id },
+        { $push: { comments: result._id } }
+      ).then((result2) => {
+        console.log(result2);
+      });
+      console.log(result._id);
+      res.json(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
 
 // listening app in number of port
 app.listen(port, () => {

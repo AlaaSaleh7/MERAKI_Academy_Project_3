@@ -6,7 +6,8 @@ const usersSchema = new mongoose.Schema({
     age:{type:Number},
     country:{type:String},
     email: {type:String},
-    password: {type:String}
+    password: {type:String},
+    role:{type:mongoose.Schema.ObjectId,ref:"roles"}
 });
 
 //before saving the user information make this 
@@ -31,10 +32,15 @@ const commentSchema = new mongoose.Schema({
     comment :{type:String},
     commenter :{type:mongoose.Schema.Types.ObjectId,ref:"Users"}
 })
+const rolesSchema=new mongoose.Schema({
+    role:{type:String},
+    permissions:[{type:String}]
+  })
 const Users = mongoose.model("Users",usersSchema)
 const Articles = mongoose.model("Articles",articlesSchema)
 const Comment = mongoose.model("Comment",commentSchema)
-
+const roles = mongoose.model("roles", rolesSchema);
+module.exports.role = roles;
 module.exports.Users = Users
 module.exports.Articles = Articles
 module.exports.Comment = Comment
