@@ -210,21 +210,24 @@ app.post("/login",async (req, res) => {
     res.send(err);
   });
 });
-     
+
 //Create a new comment
 // a Post request on endpoint http://localhost:5000/articles/:id/comments
 const authentication = (req, res, next) => {
+  if(!req.headers.authorization){
+      return res.send({ massage: "the token invalid expired", status: "403" });
+  } 
   const token = req.headers.authorization.split(" ")[1];
-  
   jwt.verify(token, secret, (err, result) => {
-    if (token) {
-      next();
+    if(err){
+     res.send(err)
     }
-    if (err) {
-      res.send({ massage: "the token invalid expired", status: "403" });
-    }
-  });
-};
+    if (result) {
+      req.token=result
+            next();
+          }
+})
+}
 app.post("/articles/:id/comments", authentication, async (req, res) => {
   const { comment, commenter } = req.body;
   const newComment = new Comment({
