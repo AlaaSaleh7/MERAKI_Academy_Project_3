@@ -2,7 +2,7 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
-const { Users, Articles, Comment } = require("./schema");
+const { Users, Articles, Comment, Roles } = require("./schema");
 
 // .env in my computer!!
 require("dotenv").config();
@@ -13,7 +13,7 @@ const jwt = require("jsonwebtoken");
 
 const db = require("./db");
 
-const { uuid } = require("uuidv4");
+//const { uuid } = require("uuidv4");
 // to has
 const bcrypt = require("bcrypt");
 
@@ -158,7 +158,7 @@ app.delete("/articles/author", (req, res) => {
 //create new author
 // a Post request on endpoint http://localhost:5000/users
 app.post("/users", (req, res) => {
-  const { firstName, lastName, age, country, email, password } = req.body;
+  const { firstName, lastName, age, country, email, password, role } = req.body;
   const newAuthor = new Users({
     firstName,
     lastName,
@@ -166,6 +166,7 @@ app.post("/users", (req, res) => {
     country,
     email,
     password,
+    role,
   });
 
   newAuthor
@@ -182,93 +183,131 @@ app.post("/users", (req, res) => {
 
 // Login
 // a Post request on endpoint http://localhost:5000/login
-app.post("/login",async (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  await Users.findOne({ email }).then( async (result) => {
-    if (!result) {
-      return res.send({ massage: "The email doesn't exist", status: 404 });
-    }
-    const payload = { userId: result._id, country: result.country,
-      role:{role:'admin',permissions:['MANAGE_USERS', 'CREATE_COMMENTS'] } } 
-    const options = {
-      expiresIn: "60m",
-    };
-    console.log(result);
-    const token = await jwt.sign(payload, secret, options);
-    console.log(result.password);  //should be a hashed password
-    await bcrypt.compare(password, result.password, (err, result) => {
-      if (result) {
-        res.json(token);
-      } else {
-        return res.send({
-          massage: "The password you've entered is incorrect",
-          status: 403,
-        });
+  await Users.findOne({ email })
+    .then(async (result) => {
+      if (!result) {
+        return res.send({ massage: "The email doesn't exist", status: 404 });
       }
+      const payload = {
+        userId: result._id,
+        country: result.country,
+        role: {
+          role: "admin",
+          permissions: ["MANAGE_USERS", "CREATE_COMMENTS"],
+        },
+      };
+      const options = {
+        expiresIn: "60m",
+      };
+      console.log(result);
+      const token = await jwt.sign(payload, secret, options);
+      console.log(result.password); //should be a hashed password
+      await bcrypt.compare(password, result.password, (err, result) => {
+        if (result) {
+          res.json(token);
+        } else {
+          return res.send({
+            massage: "The password you've entered is incorrect",
+            status: 403,
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      res.send(err);
     });
-  }).catch((err) => {
-    res.send(err);
-  });
 });
 
 //Create a new comment
 // a Post request on endpoint http://localhost:5000/articles/:id/comments
 const authentication = (req, res, next) => {
-  if(!req.headers.authorization){
-      return res.send({ massage: "the token invalid expired", status: "403" });
-  } 
+  if (!req.headers.authorization) {
+    return res.send({ massage: "the token invalid expired", status: "403" });
+  }
   const token = req.headers.authorization.split(" ")[1];
   jwt.verify(token, secret, (err, result) => {
-    if(err){
-     res.send(err)
+    if (err) {
+      res.send(err);
     }
     if (result) {
-      req.token=result
-            next();
-          }
-})
-}
-app.post("/articles/:id/comments", authentication, async (req, res) => {
-  const { comment, commenter } = req.body;
-  const newComment = new Comment({
-    comment,
-    commenter,
+      req.token = result;
+      next();
+    }
   });
+};
 
-  await newComment
+const authorization = (str) => {
+  return (fun = (req, res, next) => {
+    
+        const permissions = req.token.role.permissions;
+        for (let i = 0; i < permissions.length; i++) {
+          if (permissions[i] === str) {
+            //console.log(permissions)
+           return next();
+          } 
+        }
+      
+        return  res.json({ message: "forbidden ", status: 403 });
+        
+  });
+};
+
+app.post(
+  "/articles/:id/comments",
+  authentication,
+  authorization("CREATE_COMMENTS"),
+  async (req, res) => {
+    const { comment, commenter } = req.body;
+    const newComment = new Comment({
+      comment,
+      commenter,
+    });
+
+    await newComment
+      .save()
+      .then((result) => {
+        console.log(result);
+        Articles.findOneAndUpdate(
+          { _id: req.params.id },
+          { $push: { comments: result._id } }
+        ).then((result2) => {
+          console.log(result2);
+        });
+        console.log(result._id);
+        res.json(result);
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+    //try solve role massage
+    //createNewComment [Level 3]
+    //Use it after the authentication middleware,
+    // invoke the closure function so it returns the middleware function authorization("CREATE_COMMENT")
+  }
+);
+
+app.post("/create/role", (req, res) => {
+  //id = _id users
+  const { role, permissions } = req.body;
+  console.log(role);
+  console.log(permissions);
+  ///
+  const newRole = new Roles({
+    role,
+    permissions,
+  });
+  newRole
     .save()
     .then((result) => {
       console.log(result);
-      Articles.findOneAndUpdate(
-        { _id: req.params.id },
-        { $push: { comments: result._id } }
-      ).then((result2) => {
-        console.log(result2);
-      });
-      console.log(result._id);
       res.json(result);
     })
     .catch((err) => {
       res.send(err);
     });
-    //try solve role massage
-  //createNewComment [Level 3]
-  //Use it after the authentication middleware,
-  // invoke the closure function so it returns the middleware functionauthorization("CREATE_COMMENT")
-  const authorization = () => {
-    for (let i = 0; i < permissions.length; i++) {
-      if (permissions[i] === "CREATE_COMMENT") {
-        next();
-        authentication();
-      } else {
-        res.json({ message: "forbidden ", status: 403 });
-      }
-    }
-    authorization("CREATE_COMMENT");
-  };
-
 });
-
 // listening app in number of port
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
