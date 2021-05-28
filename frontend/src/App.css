@@ -3,22 +3,35 @@
   margin: 7px;
   display: flex;
   flex-direction: column;
+  width: 400px;
 }
 
 .App {
   border: 3px solid green;
   margin: 7px;
+  
 }
 
 .Navigator {
   border: 3px solid red;
   margin: 7px;
-  display: flex;
-  flex-direction: column;
+  display: flex ;
+  gap: 40px;
+  flex-direction: row;
+  width: 400px;
 }
 
 .button {
   cursor: pointer;
   color: aliceblue;
   background-color:rgb(61, 61, 197);
+  width: 400px;
+}
+
+.login{
+  border: 3px solid purple;
+  margin: 7px;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
 }

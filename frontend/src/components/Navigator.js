@@ -1,20 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
 
 export default function Navigator() {
   return (
     <div className="Navigator">
-      <Link to="/login">
-        
-        login
-        
-      </Link>
-      <Link to="/register">
-        
-        register
-      </Link>
+      <Link to="/Login">login</Link>
+      <Link to="/Register">register</Link>
+
+      <Link to="/Dashboard">Dashboard</Link>
+      <Link to="/NewArticle">NewArticle</Link>
+
     </div>
   );
 }
