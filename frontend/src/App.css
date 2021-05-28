@@ -1,0 +1,24 @@
+.Register {
+  border: 3px solid blue;
+  margin: 7px;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  border: 3px solid green;
+  margin: 7px;
+}
+
+.Navigator {
+  border: 3px solid red;
+  margin: 7px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  cursor: pointer;
+  color: aliceblue;
+  background-color:rgb(61, 61, 197);
+}
