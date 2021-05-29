@@ -1,15 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Switch } from "react-router-dom";
 
-export default function Navigator() {
+export default function Navigator({token}) {
+  //console.log(token);
   return (
+<>
     <div className="Navigator">
-      <Link to="/Login">login</Link>
-      <Link to="/Register">register</Link>
 
-      <Link to="/Dashboard">Dashboard</Link>
-      <Link to="/NewArticle">NewArticle</Link>
+{!token? <Link to="/Login">login</Link>:null}
+{!token?<Link to="/Register">register</Link>:null}
+
+{token?<Link to="/Dashboard">Dashboard</Link>:null}
+{token?<Link to="/NewArticle">NewArticle</Link>:null}
 
     </div>
+    </>
   );
 }

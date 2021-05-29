@@ -3,19 +3,19 @@ import axios from "axios";
 import Dashboard from "./Dashboard";
 import { useHistory } from "react-router";
 import NewArticle from "./NewArticle";
-export default function Login({ setToken }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const history = useHistory();
-  const logUser = () => {
-    axios
-      .post("http://localhost:5000/login", {
-        email: email,
-        password: password,
-      })
-      .then((res) => {
-        console.log(res.data.token);
-        setToken(res.data.token);
+export default function Login({setToken}) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const history = useHistory();
+    const logUser = () => {
+        axios
+        .post("http://localhost:5000/login", {
+            email: email,
+            password: password,
+        })
+        .then((res) => {
+            console.log(res.data.token);
+            setToken(res.data.token);
         history.push("/Dashboard");
       })
       .catch((err) => {

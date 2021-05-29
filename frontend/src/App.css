@@ -35,3 +35,11 @@
   flex-direction: column;
   width: 400px;
 }
+
+.newArticle{
+  border: 3px solid palevioletred;
+  margin: 7px;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+}
