@@ -96,8 +96,8 @@ export default function Register() {
         Register
       </button>
      
-     {success?(<div className='massageSuccess'>The User has been created successfully</div>):null}
-     {err?(<div className='massageErr'>Error happened while a new article, please try again</div>):null}
+     {success?(<div className='massageSuccessful'>The User has been created successfully</div>):null}
+     {err?(<div className='massageError'>Error happened while a new article, please try again</div>):null}
     </div>
   );
 }

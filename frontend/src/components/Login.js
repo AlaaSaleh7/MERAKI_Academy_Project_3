@@ -36,7 +36,7 @@ export default function Login({setToken}) {
           placeholder="password here"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={logUser}>login</button>
+        <button className="button" onClick={logUser}>login</button>
       </div>
     </>
   );
